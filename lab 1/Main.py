@@ -17,7 +17,7 @@ def random_solution(dimension):
     rsolution = range(dimension)
     return sample(rsolution)
 
-
+#main
 def main():
     print parse_file("instances/tai100a")
     print "main"
