@@ -1,6 +1,6 @@
 from random import sample
 
-
+#lolkek
 def parse_file(filename):
     with open(filename, "r") as f:
         lines =f.readlines()
