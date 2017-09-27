@@ -1,4 +1,4 @@
-from random import sample
+# Main file
 
 
 def parse_file(filename):
@@ -13,14 +13,11 @@ def parse_file(filename):
     return dimension, distance, flow_matrix
 
 
-def random_solution(dimension):
-    rsolution = range(dimension)
-    return sample(rsolution)
 
 #main
 def main():
-    print parse_file("instances/tai100a")
-    print "main"
+    print(parse_file("instances/tai100a"))
+    print("main")
 
 
 if "__main__":
