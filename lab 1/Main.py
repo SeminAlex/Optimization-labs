@@ -3,7 +3,7 @@
 
 def parse_file(filename):
     with open(filename, "r") as f:
-        lines =f.readlines()
+        lines = f.readlines()
     dimension = int(lines[0])
     flow_matrix = [[]] * dimension
     distance = [[]]*dimension
@@ -13,10 +13,9 @@ def parse_file(filename):
     return dimension, distance, flow_matrix
 
 
-
 #main
 def main():
-    print(parse_file("instances/tai100a"))
+   # print(parse_file("instances/tai100a"))
     print("main")
 
 
