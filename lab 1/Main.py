@@ -16,7 +16,12 @@ def parse_file(filename):
 #main
 def main():
    # print(parse_file("instances/tai100a"))
-    print("main")
+   print("main")
+   l = [1,2,3,4,5,6,7,8,9,10]
+   l2 = l
+   l2[3] = 11
+   print(l)
+
 
 
 if "__main__":
