@@ -12,7 +12,7 @@ class QAP:
         self.mflow = mflow
         self.best = list()
         self.current = list()
-        self.best_objective = 9
+        self.best_objective = float("inf")
         return
 
     def objective_function(self, solution):
@@ -144,26 +144,53 @@ class QAP:
         return             # unreachable part of code, but I need understand where function is over :)
 
     def iterated_local_search(self, iteration):
-        self.current = self.random_solution()
-        return
+        current = self.random_solution()
+        best = copy(current)
+        persent = 0.2
+        count = 0
+        for i in range(iteration):
+            current = self.perturbation(current, persent)
+            objective, solution = self.local_search(current)
+            if objective < best:
+                best = objective
+                self.best = copy(solution)
+                self.best_objective = best
+                count = 0
+                print("Iterated Local Search:")
+                print("Iteration: ", i)
+                print("Best objective: ", objective)
+            else:
+                count += 1
+                if count > iteration * 0.4:
+                    persent += 0.2
+                    print("Persent is increased", persent)
+        return self.best_objective, self.best
 
     def repeated_local_search(self, iteration):
         for i in range(iteration):
-            self.current = self.random_solution()
-            self.local_search()
-#            if
-        return
+            current = self.random_solution()
+            objective, solution = self.local_search(current)
+            if objective < self.best_objective:
+                self.best_objective = objective
+                self.best = copy(solution)
+                print("Repeated Local Search:")
+                print("Iteration: ", i)
+                print("Best objective: ", objective)
+
+        return self.best_objective, self.best
 
 
 qap = QAP()
 qap.parse_file("instances/tai20a")
-qap.current = qap.random_solution()
 
-for i in range(20):
-    qap.current = qap.random_solution()
-    ob, sol = qap.local_search(qap.random_solution())
-    print("\nLocal search " + str(i) + " result:")
-    print("objective function: ", ob)
+o, s = qap.iterated_local_search(1000)
+print(o)
+print(s)
+# for i in range(20):
+#     qap.current = qap.random_solution()
+#     ob, sol = qap.local_search(qap.random_solution())
+#     print("\nLocal search " + str(i) + " result:")
+#     print("objective function: ", ob)
 #    print("solution:")
 #    print(sol)
 #    print("\n\n")
