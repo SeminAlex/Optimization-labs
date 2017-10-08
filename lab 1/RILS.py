@@ -146,7 +146,7 @@ class QAP:
         best_obj = self.objective_function(best_sol, penalties, lamb)
 
         while True:
-            current_obj, move = self.two_opt_max(initial_sol,penalties,lamb)
+            current_obj, move = self.two_opt_max(initial_sol, penalties, lamb)
             if current_obj >= best_obj:
                 return best_obj, best_sol
 
@@ -194,26 +194,6 @@ class QAP:
 
         return self.best_objective, self.best
 
-    # def indicator(self, feature, solution):
-    #     if (solution[feature.city] == feature.fabric):
-    #         return 1
-    #     else:
-    #         return 0
-    #
-    # def get_all_features(self,solution):
-    #     feature_list=[]
-    #     if (solution[feature.city] == feature.fabric):
-    #         return 1
-    #     else:
-    #         return 0
-
-    # def calculate_features_cost(self,features,solution):
-    #     for feature in features:
-    #         if feature.exists:
-    #             for j in range(solution.length):
-    #                 feature.cost+=self.mflow[feature.fabric][solution[j]]*self.mdist[feature.city][j]
-    #                 feature.cost+=self.mflow[solution[j]][feature.fabric]*self.mdist[j][feature.city]
-
     def calculate_feature_cost(self, city, fabric, solution):
         cost = 0
         for j in range(len(solution)):
@@ -250,27 +230,10 @@ class QAP:
         return current_best_obj, current_solution
 
 
-# qap = QAP()
-# qap.parse_file("instances/tai20a")
-#
-# o, s = qap.iterated_local_search(1000)
-# print(o)
-# print(s)
-# for i in range(20):
-#     qap.current = qap.random_solution()
-#     ob, sol = qap.local_search(qap.random_solution())
-#     print("\nLocal search " + str(i) + " result:")
-#     print("objective function: ", ob)
-#    print("solution:")
-#    print(sol)
-#    print("\n\n")
-# #
-# print("*********")
-# print(random())
 qap = QAP()
 qap.parse_file("instances/tai20a")
 # print (qap.objective_function([5, 8, 11, 6, 10, 0, 4, 12, 7, 9, 3, 18, 15, 2, 13, 1, 17, 19, 16, 14]))
-ob, sol = qap.guided_local_search(1000,100)
+ob, sol = qap.guided_local_search(1000, 100)
 print("objective function: ", ob)
 print("solution:")
 print(sol)
