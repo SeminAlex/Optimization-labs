@@ -13,6 +13,13 @@ def parse_file(filename):
         flow_matrix[i] = [int(flow) for flow in lines[i + dimension + 2].split()]
     return dimension, distance, flow_matrix
 
+def to_file(filename, solution):
+    with open(filename, "w") as f:
+        tmp = str(solution).replace("[", "")
+        tmp = tmp.replace("]", "").replace(",", " ")
+        f.write(tmp)
+
+
 
 # main
 def main():
