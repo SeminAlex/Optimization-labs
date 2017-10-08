@@ -25,14 +25,9 @@ def to_file(filename, solution):
 def main():
     qap=rils.QAP()
     qap.parse_file("instances/tai20a")
-    o, s = qap.iterated_local_search(1000)
+    o, s = qap.iterated_local_search(10)
+    to_file("tai20a.sol", s)
 
-    # print(parse_file("instances/tai100a"))
-    print("main")
-    l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    l2 = l
-    l2[3] = 11
-    print(l)
 
 
 if "__main__":
