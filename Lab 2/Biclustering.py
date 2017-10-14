@@ -12,6 +12,7 @@ class BiCl:
         self.machines
         self.parts
 
+
     def parse_file(self, filename):
         with open(filename, "r") as f:
             lines = f.readlines()
