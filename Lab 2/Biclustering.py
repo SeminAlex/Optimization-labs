@@ -58,7 +58,7 @@ class BiCl:
                 zeroes -= not self.matrix[index][pindx]
         return summ, zeroes
 
-    def delta_raw(self, index, cluster):
+    def delta_row(self, index, cluster):
         '''
         Calculate impact on objective function if part with index 'index' will be moved to cluster 'cluster'  
         :param index: index of part
