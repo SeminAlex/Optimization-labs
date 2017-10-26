@@ -28,7 +28,7 @@ class BiCl:
     def objective_function(self):
         one_in = 0
         zero_in = 0
-        for cluster in range(self.max_cluster):
+        for cluster in set(self.matrix + self.parts):
             for mach in range(self.m):
                 if self.machines[mach] == cluster:
                     for part in range(self.p):
@@ -80,6 +80,25 @@ class BiCl:
     def raw_add(self):
         for i in range(self.m):
             for j in range(self.p):
+                return
+        return
+
+    def clusterCheck(self):
+        """
+        Check that current solution is allowable, i.e. there is no cluster that contain only row or only column
+        :return:
+        """
+        for cluster in set(self.machines + self.parts):
+
+            if cluster not in self.machines:
+                # there is no cluster in machines(rows)
+                for part in [i for i, x in enumerate(self.parts) if x == cluster]:
+                    # find best cluster for this parts
+                    for cl in set(self.machines):
+
+
+                return
+            elif cluster not in self.parts:
                 return
         return
 
