@@ -10,7 +10,7 @@ class BiCl:
     def __init__(self, m, p, matrix=list(), ones_n=0):
         self.m = m
         self.p = p
-        self.matrix = matrix                # boolean matrix. It allow us to get fast access to element
+        self.matrix = matrix  # boolean matrix. It allow us to get fast access to element
         self.machines = list()
         self.parts = list()
         self.ones_n = ones_n
@@ -19,10 +19,10 @@ class BiCl:
         with open(filename, "r") as f:
             lines = f.readlines()
         self.m, self.p = int(lines[0].split()[0]), int(lines[0].split()[1])
-        self.matrix = [[0]*self.p for i in range(self.m)]
-        for i in range(1, len(lines)-1):
+        self.matrix = [[0] * self.p for i in range(self.m)]
+        for i in range(1, len(lines) - 1):
             for j in lines[i].split()[1:]:
-                self.matrix[i][int(j)-1] = 1
+                self.matrix[i][int(j) - 1] = 1
         return self.matrix
         # dimension = (int(lines[0].split()[0]), int(lines[0].split()[1]))
         # self.matrix = [[]] * dimension[0]
@@ -113,19 +113,12 @@ class BiCl:
         clusters = list[m_c.keys()]
         candidates = []
         for i in clusters:
-            if m_c[i] > 1 and p_c > 1 :
+            if m_c[i] > 1 and p_c[i] > 1:
                 candidates.append(i)
         if len(candidates) != 0:
-            candidate = sample(candidates,1)
-
-        self.devide_cluster(candidate)
-
-
-
-
+            candidate = sample(candidates, 1)
+            self.devide_cluster(candidate)
 
 
 bicl = BiCl(0, 0)
 print(bicl.parse_file("instances/testinstance"))
-
-
