@@ -83,7 +83,7 @@ class BiCl:
                 zeroes += not self.matrix[mindx][index]
         return summ, zeroes
 
-    def raw_add(self):
+    def row_add(self):
         for i in range(self.m):
             for j in range(self.p):
                 return
@@ -149,8 +149,7 @@ class BiCl:
         return result
 
     def swap_row(self):
-
-        return
+        pass
 
     def move_col(self):
         objective = self.function
@@ -165,7 +164,7 @@ class BiCl:
         return
 
     def swap_col(self):
-        return
+        pass
 
 
 bicl = BiCl(0, 0)
