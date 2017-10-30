@@ -5,7 +5,7 @@ from numpy.matlib import rand, random
 
 
 class BiCl:
-    __slots__ = ["m", "p", "matrix", "machines", "parts", "max_cluster", "ones_n"]
+    __slots__ = ["m", "p", "matrix", "machines", "parts", "max_cluster", "ones_n", "function"]
 
     def __init__(self, m, p, matrix=list(), ones_n=0):
         self.m = m
@@ -14,6 +14,7 @@ class BiCl:
         self.machines = list()
         self.parts = list()
         self.ones_n = ones_n
+        self.function = -1
 
     def parse_file(self, filename):
         with open(filename, "r") as f:
@@ -118,6 +119,53 @@ class BiCl:
         if len(candidates) != 0:
             candidate = sample(candidates, 1)
             self.devide_cluster(candidate)
+
+    def cluster_check(self):
+        for cluster in set(self.parts + self.machines):
+            if cluster not in self.machines:
+                # find parts that allocated on "cluster"
+                for i in [j for j, x in enumerate(self.parts) if x == cluster]:
+                    # try to move this part into other cluster
+                    diff = float('inf')
+                    for cl in set(self.machines):
+                        ones, zeros = self.delta_row(i, cl)
+                        if float(zeros) < float(ones) / self.function:
+                            self.function = float(ones) / float(self.ones_n + zeros)
+                            # TODO: think about objective function
+
+        return
+
+    def move_row(self):
+        objective = self.function
+        result = ()
+        for cluster in set(self.machines):
+            for machine in range(self.m):
+                if self.machines[machine] != cluster:
+                    ones, zeros = self.delta_col(machine, cluster)
+                    if float(zeros) < float(ones) / objective:
+                        # TODO: think about objective function
+                        result = (machine, cluster)
+
+        return result
+
+    def swap_row(self):
+
+        return
+
+    def move_col(self):
+        objective = self.function
+        result = ()
+        for cluster in set(self.parts):
+            for part in range(self.p):
+                if self.parts[part] != cluster:
+                    ones, zeros = self.delta_row(part, cluster)
+                    if float(zeros) < float(ones) / objective:
+                        # TODO: think about objective function
+                        result = (part, cluster)
+        return
+
+    def swap_col(self):
+        return
 
 
 bicl = BiCl(0, 0)
