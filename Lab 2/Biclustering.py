@@ -5,7 +5,7 @@ from numpy.matlib import rand, random
 
 
 class BiCl:
-    __slots__ = ["m", "p", "matrix", "machines", "parts", "max_cluster", "ones_n", "function"]
+    __slots__ = ["m", "p", "matrix", "machines", "parts", "max_cluster", "ones_all", "ones", "zeros"]
 
     def __init__(self, m, p, matrix=list(), ones_n=0):
         self.m = m
@@ -79,15 +79,9 @@ class BiCl:
                 summ += self.matrix[mindx][index]
                 zeroes += not self.matrix[mindx][index]
             if self.parts[mindx] == current:
-                summ += self.matrix[mindx][index]
-                zeroes += not self.matrix[mindx][index]
+                summ -= self.matrix[mindx][index]
+                zeroes -= not self.matrix[mindx][index]
         return summ, zeroes
-
-    def raw_add(self):
-        for i in range(self.m):
-            for j in range(self.p):
-                return
-        return
 
     def devide_cluster(self, candidate):
         '''
@@ -136,14 +130,17 @@ class BiCl:
         return
 
     def move_row(self):
-        objective = self.function
+        objective = self.ones / (self.ones_all + self.zeros)
         result = ()
         for cluster in set(self.machines):
             for machine in range(self.m):
                 if self.machines[machine] != cluster:
                     ones, zeros = self.delta_col(machine, cluster)
-                    if float(zeros) < float(ones) / objective:
-                        # TODO: think about objective function
+                    new = self.ones+ones / (self.ones_all + self.zeros + zeros)
+                    if new > objective:
+                        objective = new
+                        self.ones += ones
+                        self.zeros += zeros
                         result = (machine, cluster)
 
         return result
@@ -153,18 +150,23 @@ class BiCl:
         return
 
     def move_col(self):
-        objective = self.function
+        objective = self.ones / (self.ones_all + self.zeros)
         result = ()
         for cluster in set(self.parts):
             for part in range(self.p):
                 if self.parts[part] != cluster:
                     ones, zeros = self.delta_row(part, cluster)
-                    if float(zeros) < float(ones) / objective:
-                        # TODO: think about objective function
+                    new = self.ones + ones / (self.ones_all + self.zeros + zeros)
+                    if new > objective:
+                        objective = new
+                        self.ones += ones
+                        self.zeros += zeros
                         result = (part, cluster)
-        return
+
+        return result
 
     def swap_col(self):
+
         return
 
 
