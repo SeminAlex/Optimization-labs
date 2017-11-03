@@ -13,23 +13,21 @@ class BiCl:
         self.matrix = matrix  # boolean matrix. It allow us to get fast access to element
         self.machines = list()
         self.parts = list()
-        self.ones_n = ones_n
-        self.function = -1
+        self.ones_all = ones_n
+        self.ones = ones_n
+        self.zeros = ones_n
 
     def parse_file(self, filename):
         with open(filename, "r") as f:
             lines = f.readlines()
+        self.ones_all = 0
         self.m, self.p = int(lines[0].split()[0]), int(lines[0].split()[1])
         self.matrix = [[0] * self.p for i in range(self.m)]
         for i in range(1, len(lines) - 1):
+            self.ones_all += len(lines[i].split()[1:])
             for j in lines[i].split()[1:]:
                 self.matrix[i][int(j) - 1] = 1
         return self.matrix
-        # dimension = (int(lines[0].split()[0]), int(lines[0].split()[1]))
-        # self.matrix = [[]] * dimension[0]
-        # for i in range(1, len(lines)):
-        #     self.matrix[i - 1] = [int(i) - 1 for i in lines[i].split()[1:]]
-        # return self.matrix
 
     def objective_function(self):
         one_in = 0
@@ -46,12 +44,12 @@ class BiCl:
         return one_in / (self.ones_n + zero_in)
 
     def delta_col(self, index, cluster):
-        '''
+        """
         Calculate impact on objective function if machines with index 'index' will be moved to cluster 'cluster'  
         :param index: index of machine
         :param cluster: new cluster for this machine
         :return: difference in 'ones in cluster' and 'zeroes out cluster' 
-        '''
+        """
         current = self.machines[index]
         summ = 0
         zeroes = 0
@@ -65,12 +63,12 @@ class BiCl:
         return summ, zeroes
 
     def delta_row(self, index, cluster):
-        '''
+        """
         Calculate impact on objective function if part with index 'index' will be moved to cluster 'cluster'  
         :param index: index of part
         :param cluster: new cluster for this part
         :return: difference in 'ones in cluster' and 'zeroes out cluster' 
-        '''
+        """
         current = self.parts[index]
         summ = 0
         zeroes = 0
@@ -146,6 +144,11 @@ class BiCl:
         return result
 
     def swap_row(self):
+        # objective = self.ones / (self.ones_all + self.zeros)
+        # result = ()
+        # for cluster in set(self.machines):
+        #     for machine in range(self.m):
+        #
         pass
 
     def move_col(self):
