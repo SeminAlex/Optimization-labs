@@ -1,5 +1,5 @@
 from collections import Counter
-from random import sample
+from random import sample, choice
 
 from numpy.matlib import rand, random
 
@@ -201,7 +201,7 @@ class BiCl:
             for part in range(self.p):
                 fones, fzeros = self.delta_row(part, cluster)
                 for oponent in range(self.m):
-                    if self.machines[oponent] != cluster and part != oponent
+                    if self.machines[oponent] != cluster and part != oponent:
                         opones, opzeros = self.delta_row(oponent, cluster)
                     new = self.ones + fones + opones
                     new /= self.ones_all + self.zeros + fzeros + opzeros
@@ -210,6 +210,19 @@ class BiCl:
                         result = (part, oponent, self.ones+fones+opones, self.zeros+fzeros+opzeros)
         return result
 
+    def random_solution(self):
+        cluster_max = min(self.m, self.p)                           # just cause I can do it!
+        self.machines = sample(range(cluster_max), cluster_max)
+        self.parts = [choice(self.machines) for i in range(self.p)]
+
 
 bicl = BiCl(0, 0)
-print(bicl.parse_file("instances/testinstance"))
+print(bicl.parse_file("instances/20x20.txt"))
+bicl.random_solution()
+bicl.cluster_check()
+bicl.cluster_check()
+
+print(bicl)
+print(set(bicl.machines))
+print(set(bicl.parts))
+
