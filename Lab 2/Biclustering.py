@@ -130,7 +130,11 @@ class BiCl:
             candidate = sample(candidates, 1)
             self.devide_cluster(candidate)
 
-    def get_max_impactCluster(self):
+    def calculate_cluster(self):
+        """
+        clculates the number of ones and zeros in each cluster
+        :return: dict, where key - cluster number and value - [x,y], where x - number of zeros and y - number of ones
+        """
         max_impact_cluster = 0
         cluster_dict = dict.fromkeys(set(self.machines),[0,0])
         for candidate in cluster_dict.keys():
@@ -150,10 +154,8 @@ class BiCl:
         """
 
 
-        return cluster_dict
-
     def pertrubation_neighbourhood(self):
-
+        pass
 
 
 
