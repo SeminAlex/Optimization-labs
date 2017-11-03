@@ -128,6 +128,12 @@ class BiCl:
         return
 
     def move_row(self):
+        """
+        Find row and best cluster for this row in current solution
+        
+        :return: (index of row, best cluster number, number of ones in clusters in new solution, number of zeros in 
+        clusters in new solution)
+        """
         objective = self.ones / (self.ones_all + self.zeros)
         result = ()
         for cluster in set(self.machines):
@@ -137,21 +143,39 @@ class BiCl:
                     new = self.ones+ones / (self.ones_all + self.zeros + zeros)
                     if new > objective:
                         objective = new
-                        self.ones += ones
-                        self.zeros += zeros
-                        result = (machine, cluster)
+                        result = (machine, cluster, self.ones + ones, self.zeros + zeros)
 
         return result
 
     def swap_row(self):
-        # objective = self.ones / (self.ones_all + self.zeros)
-        # result = ()
-        # for cluster in set(self.machines):
-        #     for machine in range(self.m):
-        #
-        pass
+        """
+        Find two rows which cluster swap get max impact on objective function
+
+        :return: (index of fist row, index of second row, number of ones in clusters in new solution, number of zeros in 
+        clusters in new solution)
+        """
+        objective = self.ones / (self.ones_all + self.zeros)
+        result = ()
+        for cluster in set(self.machines):
+            for machine in range(self.m):
+                fones, fzeros = self.delta_col(machine, cluster)
+                for oponent in range(self.m):
+                    if self.machines[oponent] != cluster and machine != oponent:
+                        opones, opzeros = self.delta_col(oponent, cluster)
+                        new = self.ones + fones + opones
+                        new /= self.ones_all + self.zeros + fzeros + opzeros
+                        if new > objective:
+                            objective = new
+                            result = (machine, oponent, self.ones + fones + opones, self.zeros+fzeros+opzeros)
+        return result
 
     def move_col(self):
+        """
+        Find column and best cluster for him in current solution
+        
+        :return: (index of column, best cluster number, number of ones in clusters in new solution, number of zeros in 
+        clusters in new solution)
+        """
         objective = self.ones / (self.ones_all + self.zeros)
         result = ()
         for cluster in set(self.parts):
@@ -161,14 +185,30 @@ class BiCl:
                     new = self.ones + ones / (self.ones_all + self.zeros + zeros)
                     if new > objective:
                         objective = new
-                        self.ones += ones
-                        self.zeros += zeros
-                        result = (part, cluster)
-
+                        result = (part, cluster, self.ones + ones, self.zeros + zeros)
         return result
 
     def swap_col(self):
-        pass
+        """
+        Find two columns which clusters swap get max impact on objective function
+        
+        :return: (index of fist column, index of second column, number of ones in clusters in new solution, 
+        number of zeros in clusters in new solution) 
+        """
+        objective = self.ones / (self.ones_all + self.zeros)
+        result = ()
+        for cluster in set(self.parts):
+            for part in range(self.p):
+                fones, fzeros = self.delta_row(part, cluster)
+                for oponent in range(self.m):
+                    if self.machines[oponent] != cluster and part != oponent
+                        opones, opzeros = self.delta_row(oponent, cluster)
+                    new = self.ones + fones + opones
+                    new /= self.ones_all + self.zeros + fzeros + opzeros
+                    if new > objective:
+                        objective = new
+                        result = (part, oponent, self.ones+fones+opones, self.zeros+fzeros+opzeros)
+        return result
 
 
 bicl = BiCl(0, 0)
