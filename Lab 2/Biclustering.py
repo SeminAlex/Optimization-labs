@@ -146,8 +146,7 @@ class BiCl:
         return result
 
     def swap_row(self):
-
-        return
+        pass
 
     def move_col(self):
         objective = self.ones / (self.ones_all + self.zeros)
@@ -166,8 +165,7 @@ class BiCl:
         return result
 
     def swap_col(self):
-
-        return
+        pass
 
 
 bicl = BiCl(0, 0)
