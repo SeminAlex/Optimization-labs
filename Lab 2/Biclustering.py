@@ -63,12 +63,12 @@ class BiCl:
         return summ, zeroes
 
     def delta_row(self, index, cluster):
-        """
+        '''
         Calculate impact on objective function if part with index 'index' will be moved to cluster 'cluster'  
         :param index: index of part
         :param cluster: new cluster for this part
         :return: difference in 'ones in cluster' and 'zeroes out cluster' 
-        """
+        '''
         current = self.parts[index]
         summ = 0
         zeroes = 0
@@ -77,9 +77,19 @@ class BiCl:
                 summ += self.matrix[mindx][index]
                 zeroes += not self.matrix[mindx][index]
             if self.parts[mindx] == current:
-                summ -= self.matrix[mindx][index]
-                zeroes -= not self.matrix[mindx][index]
+                summ += self.matrix[mindx][index]
+                zeroes += not self.matrix[mindx][index]
         return summ, zeroes
+
+    def row_add(self):
+        for i in range(self.m):
+            for j in range(self.p):
+                return
+        return
+
+    ############################################
+    ############NEIGHBOURHOOD SECTION###########
+    ############################################
 
     def devide_cluster(self, candidate):
         '''
@@ -87,14 +97,22 @@ class BiCl:
         :param candidate: cluster to devide
         :return:
         '''
-        m_indices = [i for i, x in enumerate(self.machines) if x == candidate]
-        p_indices = [i for i, x in enumerate(self.machines) if x == candidate]
+        m_indices, p_indices = self.get_cluster_indices(candidate)
         m_l = int(len(m_indices) / 2)
         for i in m_indices[:m_l]:
             self.machines = max(self.machines) + 1
         p_l = int(len(p_indices) / 2)
         for i in p_indices[:p_l]:
             self.parts = max(self.parts) + 1
+
+    def get_cluster_indices(self, candidate):
+        """
+        :param candidate:
+        :return: cluster indices
+        """
+        m_indices = [i for i, x in enumerate(self.machines) if x == candidate]
+        p_indices = [i for i, x in enumerate(self.machines) if x == candidate]
+        return m_indices, p_indices
 
     def division_neighbourhood(self):
         '''
@@ -111,6 +129,47 @@ class BiCl:
         if len(candidates) != 0:
             candidate = sample(candidates, 1)
             self.devide_cluster(candidate)
+
+    def calculate_cluster(self):
+        """
+        clculates the number of ones and zeros in each cluster
+        :return: dict, where key - cluster number and value - [x,y], where x - number of zeros and y - number of ones
+        """
+        max_impact_cluster = 0
+        cluster_dict = dict.fromkeys(set(self.machines),[0,0])
+        for candidate in cluster_dict.keys():
+            m_indices, p_indices = self.get_cluster_indices(candidate)
+            for i in m_indices:
+                for j in p_indices:
+                if self.matrix[i,j] == 0:
+                    cluster_dict[candidate][0] += 1
+                else:
+                    cluster_dict[candidate][1] += 1
+        return cluster_dict
+        """
+        maxd = 0
+        for cl in cluster_dict.keys():
+            maxd = cluster_dict[cl][1]/cluster_dict[cl][1]
+            if
+        """
+
+
+    def pertrubation_neighbourhood(self):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+    ############################################
+    ############NEIGHBOURHOOD SECTION###########
+    ############################################
 
     def cluster_check(self):
         for cluster in set(self.parts + self.machines):
@@ -214,6 +273,9 @@ class BiCl:
         cluster_max = min(self.m, self.p)                           # just cause I can do it!
         self.machines = sample(range(cluster_max), cluster_max)
         self.parts = [choice(self.machines) for i in range(self.p)]
+
+
+
 
 
 bicl = BiCl(0, 0)
