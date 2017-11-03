@@ -121,7 +121,7 @@ class BiCl:
         '''
         m_c = Counter(self.machines)
         p_c = Counter(self.parts)
-        clusters = list[m_c.keys()]
+        clusters = list(m_c.keys())
         candidates = []
         for i in clusters:
             if m_c[i] > 1 and p_c[i] > 1:
@@ -132,44 +132,23 @@ class BiCl:
 
     def calculate_cluster(self):
         """
-        clculates the number of ones and zeros in each cluster
+        calculates the number of ones and zeros in each cluster
         :return: dict, where key - cluster number and value - [x,y], where x - number of zeros and y - number of ones
         """
-        max_impact_cluster = 0
-        cluster_dict = dict.fromkeys(set(self.machines),[0,0])
+        cluster_dict = dict.fromkeys(set(self.machines), [0, 0])
         for candidate in cluster_dict.keys():
             m_indices, p_indices = self.get_cluster_indices(candidate)
             for i in m_indices:
                 for j in p_indices:
-                if self.matrix[i,j] == 0:
-                    cluster_dict[candidate][0] += 1
-                else:
-                    cluster_dict[candidate][1] += 1
+                    if self.matrix[i][j] == 0:
+                        cluster_dict[candidate][0] += 1
+                    else:
+                        cluster_dict[candidate][1] += 1
         return cluster_dict
-        """
-        maxd = 0
-        for cl in cluster_dict.keys():
-            maxd = cluster_dict[cl][1]/cluster_dict[cl][1]
-            if
-        """
 
 
     def pertrubation_neighbourhood(self):
         pass
-
-
-
-
-
-
-
-
-
-
-
-    ############################################
-    ############NEIGHBOURHOOD SECTION###########
-    ############################################
 
     def cluster_check(self):
         for cluster in set(self.parts + self.machines):
@@ -180,9 +159,8 @@ class BiCl:
                     diff = float('inf')
                     for cl in set(self.machines):
                         ones, zeros = self.delta_row(i, cl)
-                        if float(zeros) < float(ones) / self.function:
-                            self.function = float(ones) / float(self.ones_n + zeros)
-                            # TODO: think about objective function
+                        
+
 
         return
 
@@ -199,7 +177,7 @@ class BiCl:
             for machine in range(self.m):
                 if self.machines[machine] != cluster:
                     ones, zeros = self.delta_col(machine, cluster)
-                    new = self.ones+ones / (self.ones_all + self.zeros + zeros)
+                    new = self.ones + ones / (self.ones_all + self.zeros + zeros)
                     if new > objective:
                         objective = new
                         result = (machine, cluster, self.ones + ones, self.zeros + zeros)
@@ -225,7 +203,7 @@ class BiCl:
                         new /= self.ones_all + self.zeros + fzeros + opzeros
                         if new > objective:
                             objective = new
-                            result = (machine, oponent, self.ones + fones + opones, self.zeros+fzeros+opzeros)
+                            result = (machine, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
         return result
 
     def move_col(self):
@@ -266,16 +244,13 @@ class BiCl:
                     new /= self.ones_all + self.zeros + fzeros + opzeros
                     if new > objective:
                         objective = new
-                        result = (part, oponent, self.ones+fones+opones, self.zeros+fzeros+opzeros)
+                        result = (part, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
         return result
 
     def random_solution(self):
-        cluster_max = min(self.m, self.p)                           # just cause I can do it!
+        cluster_max = min(self.m, self.p)  # just cause I can do it!
         self.machines = sample(range(cluster_max), cluster_max)
         self.parts = [choice(self.machines) for i in range(self.p)]
-
-
-
 
 
 bicl = BiCl(0, 0)
@@ -287,4 +262,3 @@ bicl.cluster_check()
 print(bicl)
 print(set(bicl.machines))
 print(set(bicl.parts))
-
