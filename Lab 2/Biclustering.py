@@ -280,11 +280,6 @@ class BiCl:
                         result = (part, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
         return result
 
-    def random_solution(self):
-        cluster_max = min(self.m, self.p)  # just cause I can do it!
-        self.machines = sample(range(cluster_max), cluster_max)
-        self.parts = [choice(self.machines) for i in range(self.p)]
-
 
 bicl = BiCl(0, 0)
 print(bicl.parse_file("instances/20x20.txt"))
