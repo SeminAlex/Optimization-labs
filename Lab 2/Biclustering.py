@@ -119,7 +119,7 @@ class BiCl:
         p_indices = [i for i, x in enumerate(self.machines) if x == candidate]
         return m_indices, p_indices
 
-    def division_neighbourhood(self):
+    def division_neighborhood(self):
         '''
         neigborhood of cluster division
         :return:
@@ -162,7 +162,7 @@ class BiCl:
         max_impact_cluster = max(cluster_dict.items())[0]
         return max_impact_cluster
 
-    def shuffle_neigborhood(self):
+    def shuffle_neighborhood(self):
         """
         take cluster with max impact, fix it and shuffle the others
         :return:
@@ -184,6 +184,10 @@ class BiCl:
         for i in range(len(p_indices)):
             self.machines[p_indices[i]], self.machines[new_p_indices[i]] = self.machines[new_p_indices[i]], \
                                                                            self.machines[p_indices[i]]
+
+    def merge_neighborhood(self):
+        pass
+
 
     def cluster_check(self):
         for cluster in set(self.parts + self.machines):
