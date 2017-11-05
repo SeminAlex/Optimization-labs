@@ -1,5 +1,5 @@
 from collections import Counter
-from random import sample, choice
+from random import sample, choice, shuffle
 
 from numpy.matlib import rand, random
 
@@ -87,6 +87,11 @@ class BiCl:
                 return
         return
 
+    def random_solution(self):
+        cluster_max = min(self.m, self.p)  # just cause I can do it!
+        self.machines = sample(range(cluster_max), cluster_max)
+        self.parts = [choice(self.machines) for i in range(self.p)]
+
     ############################################
     ############NEIGHBOURHOOD SECTION###########
     ############################################
@@ -146,9 +151,39 @@ class BiCl:
                         cluster_dict[candidate][1] += 1
         return cluster_dict
 
+    def get_max_impact_cluster(self):
+        """
+        get cluster with the maximum ones to zeros ratio
+        :return: max impact cluster
+        """
+        cluster_dict = self.calculate_cluster()
+        for key, value in cluster_dict.items():
+            cluster_dict[key] = value[1] / value[2]
+        max_impact_cluster = max(cluster_dict.items())[0]
+        return max_impact_cluster
 
-    def pertrubation_neighbourhood(self):
-        pass
+    def shuffle_neigborhood(self):
+        """
+        take cluster with max impact, fix it and shuffle the others
+        :return:
+        """
+        fixed_cluster = self.get_max_impact_cluster()
+        # store fixed cluster indices
+        m_indices, p_indices = self.get_cluster_indices(fixed_cluster)
+
+        shuffle(self.machines)
+        shuffle(self.parts)
+        # get new indices after shuffling
+        new_m_indices, new_p_indices = self.get_cluster_indices(fixed_cluster)
+
+        # swap fixed cluster elements back to their original position
+        for i in range(len(m_indices)):
+            self.machines[m_indices[i]], self.machines[new_m_indices[i]] = self.machines[new_m_indices[i]], \
+                                                                           self.machines[m_indices[i]]
+
+        for i in range(len(p_indices)):
+            self.machines[p_indices[i]], self.machines[new_p_indices[i]] = self.machines[new_p_indices[i]], \
+                                                                           self.machines[p_indices[i]]
 
     def cluster_check(self):
         for cluster in set(self.parts + self.machines):
@@ -159,8 +194,6 @@ class BiCl:
                     diff = float('inf')
                     for cl in set(self.machines):
                         ones, zeros = self.delta_row(i, cl)
-                        
-
 
         return
 
