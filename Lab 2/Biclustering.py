@@ -186,7 +186,22 @@ class BiCl:
                                                                            self.machines[p_indices[i]]
 
     def merge_neighborhood(self):
-        pass
+        # TODO should we make it return true or false?
+        """
+        merge two random clusters neigborhood
+        :return:
+        """
+        if len(set(self.machines)) > 1:
+            candidate_clusters = random.sample(set(self.machines),2)
+            candidate_clusters.sort()
+            for i in self.m:
+                if self.machines[i] == candidate_clusters[1]:
+                    self.machines[i] = candidate_clusters[0]
+            for i in self.p:
+                if self.parts[i] == candidate_clusters[1]:
+                    self.parts[i] = candidate_clusters[0]
+        else:
+            pass
 
 
     def cluster_check(self):
