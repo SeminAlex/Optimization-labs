@@ -1,7 +1,6 @@
 from collections import Counter
 from random import sample, choice, shuffle
 
-from numpy.matlib import rand, random
 
 
 class BiCl:
@@ -81,19 +80,12 @@ class BiCl:
                 zeroes += not self.matrix[mindx][index]
         return summ, zeroes
 
-    def row_add(self):
-        for i in range(self.m):
-            for j in range(self.p):
-                return
-        return
-
     def random_solution(self):
-        cluster_max = min(self.m, self.p)  # just cause I can do it!
-        self.machines = sample(range(cluster_max), cluster_max)
+        self.machines = sample(range(self.m), self.m)
         self.parts = [choice(self.machines) for i in range(self.p)]
 
     ############################################
-    ############NEIGHBOURHOOD SECTION###########
+    ########### NEIGHBORHOOD SECTION ###########
     ############################################
 
     def devide_cluster(self, candidate):
@@ -192,7 +184,7 @@ class BiCl:
         :return:
         """
         if len(set(self.machines)) > 1:
-            candidate_clusters = random.sample(set(self.machines),2)
+            candidate_clusters = sample(set(self.machines),2)
             candidate_clusters.sort()
             for i in self.m:
                 if self.machines[i] == candidate_clusters[1]:
@@ -200,22 +192,27 @@ class BiCl:
             for i in self.p:
                 if self.parts[i] == candidate_clusters[1]:
                     self.parts[i] = candidate_clusters[0]
-        else:
-            pass
-
+        return
 
     def cluster_check(self):
+        objective = self.ones / (self.ones_all + self.zeros)
         for cluster in set(self.parts + self.machines):
             if cluster not in self.machines:
                 # find parts that allocated on "cluster"
                 for i in [j for j, x in enumerate(self.parts) if x == cluster]:
                     # try to move this part into other cluster
-                    diff = float('inf')
                     for cl in set(self.machines):
                         ones, zeros = self.delta_row(i, cl)
+                        new = self.ones + ones / (self.ones_all + self.zeros + zeros)
+                        if new > objective:
+                            objective = new
+                            self.ones += ones
+                            self.zeros += zeros
 
 
         return
+
+    # neighborhoods  for VND
 
     def move_row(self):
         """
