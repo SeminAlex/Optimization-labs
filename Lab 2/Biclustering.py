@@ -30,7 +30,7 @@ class BiCl:
     def objective_function(self):
         one_in = 0
         zero_in = 0
-        for cluster in set(self.matrix + self.parts):
+        for cluster in set(self.machines + self.parts):
             for mach in range(self.m):
                 if self.machines[mach] == cluster:
                     for part in range(self.p):
@@ -80,8 +80,11 @@ class BiCl:
         return summ, zeroes
 
     def random_solution(self):
-        self.machines = sample(range(self.m), self.m)
-        self.parts = [choice(self.machines) for _ in range(self.p)]
+        max_cluster = min(self.m, self.p)
+        available_clusters = list(range(max_cluster))
+        self.machines = [choice(available_clusters) for _ in range(self.m)]
+        self.parts = [choice(available_clusters) for _ in range(self.p)]
+        obj, self.ones, self.zeros = self.objective_function()
 
     # ###########################################
     # ########## NEIGHBORHOOD SECTION ###########
@@ -195,32 +198,32 @@ class BiCl:
 
     def cluster_check(self):
         objective = self.ones / (self.ones_all + self.zeros)
+        available = set(self.machines).intersection(self.parts)
         for cluster in set(self.parts + self.machines):
             if cluster not in self.machines:
                 # find parts that allocated on "cluster"
                 for i in [j for j, x in enumerate(self.parts) if x == cluster]:
                     # try to move this part into other cluster
-                    for cl in set(self.machines):
-                        ones, zeros = self.delta_col(i, cl)
-                        new = self.ones + ones / (self.ones_all + self.zeros + zeros)
-                        if new > objective:
-                            objective = new
-                            self.ones += ones
-                            self.zeros += zeros
-                            break
+                    cl = choice(list(available))
+                    ones, zeros = self.delta_col(i, cl)
+                    new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
+                    objective = new
+                    self.ones += ones
+                    self.zeros += zeros
+                    self.parts[i] = cl
 
             if cluster not in self.parts:
                 # find machines that allocated on "cluster"
                 for i in [j for j, x in enumerate(self.machines) if x == cluster]:
                     # try to move this machine into other cluster
-                    for cl in set(self.parts):
-                        ones, zeros = self.delta_row(i, cl)
-                        new = self.ones + ones / (self.ones_all + self.zeros + zeros)
-                        if new > objective:
-                            objective = new
-                            self.ones += ones
-                            self.zeros += zeros
-                            break
+                    cl = choice(list(available))
+                    ones, zeros = self.delta_row(i, cl)
+                    new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
+                    objective = new
+                    self.ones += ones
+                    self.zeros += zeros
+                    self.machines[i] = cl
+
         return
 
     # neighborhoods  for VND
@@ -238,7 +241,7 @@ class BiCl:
             for machine in range(self.m):
                 if self.machines[machine] != cluster:
                     ones, zeros = self.delta_col(machine, cluster)
-                    new = self.ones + ones / (self.ones_all + self.zeros + zeros)
+                    new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
                     if new > objective:
                         objective = new
                         result = (machine, cluster, self.ones + ones, self.zeros + zeros)
@@ -280,7 +283,7 @@ class BiCl:
             for part in range(self.p):
                 if self.parts[part] != cluster:
                     ones, zeros = self.delta_row(part, cluster)
-                    new = self.ones + ones / (self.ones_all + self.zeros + zeros)
+                    new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
                     if new > objective:
                         objective = new
                         result = (part, cluster, self.ones + ones, self.zeros + zeros)
@@ -312,7 +315,7 @@ class BiCl:
 bicl = BiCl(0, 0)
 print(bicl.parse_file("instances/20x20.txt"))
 bicl.random_solution()
-# bicl.cluster_check()
+bicl.cluster_check()
 # bicl.cluster_check()
 
 print(bicl)
