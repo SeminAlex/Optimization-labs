@@ -84,11 +84,41 @@ class BiCl:
         available_clusters = list(range(max_cluster))
         self.machines = [choice(available_clusters) for _ in range(self.m)]
         self.parts = [choice(available_clusters) for _ in range(self.p)]
-        obj, self.ones, self.zeros = self.objective_function()
+        _, self.ones, self.zeros = self.objective_function()
 
     # ###########################################
     # ########## NEIGHBORHOOD SECTION ###########
     # ###########################################
+
+    def neighbors(self, name=str()):
+        name = name.lower()
+        if name == "division":
+            self.division_neighborhood()
+            return
+        elif name == "shuffle":
+            self.shuffle_neighborhood()
+            return
+        elif name == "merge":
+            self.merge_neighborhood()
+            return
+        elif name == "move_row":
+            index, cluster, self.ones, self.zeros = self.move_row()
+            self.machines[index] = cluster
+            return
+        elif name == "move_col":
+            index, cluster, self.ones, self.zeros = self.move_col()
+            self.parts[index] = cluster
+            return
+        elif name == "swap_row":
+            fidx, sidx, self.ones, self.zeros = self.swap_row()
+            self.machines[fidx], self.machines[sidx] = self.machines[sidx], self.machines[fidx]
+            return
+        elif name == "swap_col":
+            fidx, sidx, self.ones, self.zeros = self.swap_row()
+            self.machines[fidx], self.machines[sidx] = self.machines[sidx], self.machines[fidx]
+            return
+        else:
+            raise "Error: There is no neighborhood with name '" + str(name) + "'\n"
 
     def divide_cluster(self, candidate):
         """
@@ -180,7 +210,6 @@ class BiCl:
                                                                            self.machines[p_indices[i]]
 
     def merge_neighborhood(self):
-        # TODO should we make it return true or false?
         """
         Merge two random clusters neigborhood
         :return:
@@ -223,7 +252,7 @@ class BiCl:
                     self.ones += ones
                     self.zeros += zeros
                     self.machines[i] = cl
-
+        _, self.ones, self.zeros = self.objective_function()
         return
 
     # neighborhoods  for VND
@@ -313,10 +342,21 @@ class BiCl:
 
 
 bicl = BiCl(0, 0)
-print(bicl.parse_file("instances/20x20.txt"))
+bicl.parse_file("instances/20x20.txt")
 bicl.random_solution()
+print("before cluster check " + str(bicl.objective_function()))
 bicl.cluster_check()
-# bicl.cluster_check()
+print("after cluster check " + str(bicl.objective_function()))
+
+
+ls = ["move_row", "move_col", "swap_row", "swap_col"] # "shuffle","merge",
+
+for n in ls:
+    bicl.neighbors(n)
+    print("neighbor - " + n + "\n")
+    print(str(bicl.ones) + " " + str(bicl.zeros)+"\n")
+    _, ones, zeros = bicl.objective_function()
+    print(str(ones) + " " + str(zeros)+"\n")
 
 print(bicl)
 print(set(bicl.machines))
