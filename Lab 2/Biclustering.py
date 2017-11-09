@@ -125,7 +125,7 @@ class BiCl:
     def divide_cluster(self, candidate):
         """
         Divides cluster into 2 separate clusters
-        :param candidate: cluster to devide
+        :param candidate: cluster to divide
         :return:
         """
         m_indices, p_indices = self.get_cluster_indices(candidate)
@@ -135,6 +135,7 @@ class BiCl:
         p_l = int(len(p_indices) / 2)
         for _ in p_indices[:p_l]:
             self.parts = max(self.parts) + 1
+        return
 
     def get_cluster_indices(self, candidate):
         """
@@ -160,6 +161,8 @@ class BiCl:
         if len(candidates) != 0:
             candidate = sample(candidates, 1)
             self.divide_cluster(candidate)
+        self.calculate_neighbour_impact()
+        return
 
     def calculate_cluster(self):
         """
@@ -210,6 +213,18 @@ class BiCl:
         for i in range(len(p_indices)):
             self.machines[p_indices[i]], self.machines[new_p_indices[i]] = self.machines[new_p_indices[i]], \
                                                                            self.machines[p_indices[i]]
+        self.calculate_neighbour_impact()
+        return
+
+    def calculate_neighbour_impact(self):
+        """
+        calculates number of ones and zeros fo current solution
+        suggest to call it after performing global neighborhoods
+        :return:
+        """
+        zero_one_n = [sum(x) for x in zip(*self.calculate_cluster().values())]
+        self.ones = zero_one_n[1]
+        self.zeros = zero_one_n[0]
 
     def merge_neighborhood(self):
         """
@@ -225,6 +240,7 @@ class BiCl:
             for i in range(self.p):
                 if self.parts[i] == candidate_clusters[1]:
                     self.parts[i] = candidate_clusters[0]
+        self.calculate_neighbour_impact()
         return
 
     def cluster_check(self):
