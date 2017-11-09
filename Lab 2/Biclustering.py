@@ -30,15 +30,11 @@ class BiCl:
     def objective_function(self):
         one_in = 0
         zero_in = 0
-        for cluster in set(self.machines + self.parts):
-            for mach in range(self.m):
-                if self.machines[mach] == cluster:
-                    for part in range(self.p):
-                        if self.parts[part] == cluster:
-                            if self.matrix[mach].count(part) != 0:
-                                one_in += 1
-                            else:
-                                zero_in += 1
+        for machine in range(self.m):
+            for part in range(self.p):
+                if self.machines[machine] == self.parts[part]:
+                    one_in += self.matrix[machine][part]
+                    zero_in += not self.matrix[machine][part]
         return one_in / (self.ones_all + zero_in), one_in, zero_in
 
     def delta_col(self, index, cluster):
