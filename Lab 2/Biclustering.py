@@ -321,27 +321,18 @@ class BiCl:
         for cluster in set(self.machines):
             for machine in range(self.m):
                 fones, fzeros = self.delta_col(machine, cluster)
-                cur = self.machines[machine]
-                self.machines[machine] = cluster
-
                 for oponent in range(self.m):
                     if self.machines[oponent] != cluster and machine != oponent:
-                        opones, opzeros = self.delta_col(oponent, cur) #self.machines[machine])
-                        new = self.ones + fones + opones
-                        new /= (self.ones_all + self.zeros + fzeros + opzeros)
-
-                        cur2 = self.machines[oponent]
-                        self.machines[oponent] = cur #self.machines[machine]
-                        self.machines[oponent] = cur2
-
+                        # opones, opzeros = self.delta_col(oponent, cluster)
+                        # new = self.ones + fones + opones
+                        # new /= self.ones_all + self.zeros + fzeros + opzeros
+                        self.machines[machine], self.machines[oponent] = self.machines[oponent], self.machines[machine]
+                        new,ones,zeros = self.objective_function()
+                        self.machines[machine], self.machines[oponent] = self.machines[oponent], self.machines[machine]
                         if new > objective:
                             objective = new
-                            result = (machine, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
-
-                            self.machines[machine] = cur
-                            return result
-  #              self.machines[machine] = cur
-
+                            # result = (machine, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
+                            result = (machine, oponent, ones, zeros)
         return result
 
     def move_col(self):
@@ -398,6 +389,7 @@ pidor = [sum(x) for x in zip(*bicl.calculate_cluster().values())]
 print(bicl.calculate_cluster())
 _, ones, zeros = bicl.objective_function()
 
+# print("navalney", pidor, [ones, zeros], 'lokek', bicl.ones_all)
 
 print("after cluster check " + str(bicl.objective_function()))
 
