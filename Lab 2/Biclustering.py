@@ -84,6 +84,17 @@ class BiCl:
         self.parts = [choice(available_clusters) for _ in range(self.p)]
         _, self.ones, self.zeros = self.objective_function()
 
+    def write_to_file(self, filename):
+        with open(filename, "w") as f:
+            for cl in set(self.machines):
+                for i in range(self.m):
+                    if self.machines[i] == cl:
+                        f.write(str(i) + ";;")
+                        f.write(str(self.matrix[i]).replace("[","").replace("]","").replace(",",";") + "\n")
+
+
+
+
     #        ###########################################
     #        ########## NEIGHBORHOOD SECTION ###########
     #        ###########################################
@@ -111,11 +122,11 @@ class BiCl:
             return
         elif name == "swap_row":
             fidx, sidx, self.ones, self.zeros = self.swap_row()
-            self.machines[fidx], self.machines[sidx] = self.machines[sidx], self.machines[fidx]
+            self.machines[sidx], self.machines[fidx] = self.machines[fidx], self.machines[sidx]
             return
         elif name == "swap_col":
-            fidx, sidx, self.ones, self.zeros = self.swap_row()
-            self.machines[fidx], self.machines[sidx] = self.machines[sidx], self.machines[fidx]
+            fidx, sidx, self.ones, self.zeros = self.swap_col()
+            self.parts[fidx], self.parts[sidx] = self.parts[sidx], self.parts[fidx]
             return
         else:
             raise "Error: There is no neighborhood with name '" + str(name) + "'\n"
@@ -300,7 +311,7 @@ class BiCl:
 
     def swap_row(self):
         """
-        Find two rows which cluster swap get max impact on objective function
+        Find two rows which clusters swap get max impact on objective function
 
         :return: (index of fist row, index of second row, number of ones in clusters in new solution, number of zeros in
         clusters in new solution)
@@ -310,14 +321,27 @@ class BiCl:
         for cluster in set(self.machines):
             for machine in range(self.m):
                 fones, fzeros = self.delta_col(machine, cluster)
+                cur = self.machines[machine]
+                self.machines[machine] = cluster
+
                 for oponent in range(self.m):
                     if self.machines[oponent] != cluster and machine != oponent:
-                        opones, opzeros = self.delta_col(oponent, cluster)
+                        opones, opzeros = self.delta_col(oponent, cur) #self.machines[machine])
                         new = self.ones + fones + opones
-                        new /= self.ones_all + self.zeros + fzeros + opzeros
+                        new /= (self.ones_all + self.zeros + fzeros + opzeros)
+
+                        cur2 = self.machines[oponent]
+                        self.machines[oponent] = cur #self.machines[machine]
+                        self.machines[oponent] = cur2
+
                         if new > objective:
                             objective = new
                             result = (machine, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
+
+                            self.machines[machine] = cur
+                            return result
+  #              self.machines[machine] = cur
+
         return result
 
     def move_col(self):
@@ -353,12 +377,12 @@ class BiCl:
                 fones, fzeros = self.delta_row(part, cluster)
                 for oponent in range(self.m):
                     if self.machines[oponent] != cluster and part != oponent:
-                        opones, opzeros = self.delta_row(oponent, cluster)
-                    new = self.ones + fones + opones
-                    new /= self.ones_all + self.zeros + fzeros + opzeros
-                    if new > objective:
-                        objective = new
-                        result = (part, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
+                        opones, opzeros = self.delta_row(oponent, self.parts[part])
+                        new = self.ones + fones + opones
+                        new /= self.ones_all + self.zeros + fzeros + opzeros
+                        if new > objective:
+                            objective = new
+                            result = (part, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
         return result
 
 
@@ -374,7 +398,6 @@ pidor = [sum(x) for x in zip(*bicl.calculate_cluster().values())]
 print(bicl.calculate_cluster())
 _, ones, zeros = bicl.objective_function()
 
-print("suka blyat navalney", pidor, [ones, zeros], 'lokek', bicl.ones_all)
 
 print("after cluster check " + str(bicl.objective_function()))
 
@@ -385,8 +408,7 @@ for n in ls:
     print("neighbor - " + n)
     print("in class : " + str(bicl.ones) + " " + str(bicl.zeros))
     _, ones, zeros = bicl.objective_function()
-    print("from function : " + str(ones) + " " + str(zeros))
-    print("in class : " + str(bicl.ones) + " " + str(bicl.zeros) + "\n")
+    print("from function : " + str(ones) + " " + str(zeros)+"\n")
 
 print(set(bicl.machines))
 print(set(bicl.parts))
