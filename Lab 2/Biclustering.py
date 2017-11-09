@@ -74,7 +74,7 @@ class BiCl:
             if self.machines[mindx] == cluster:
                 summ += self.matrix[mindx][index]
                 zeroes += not self.matrix[mindx][index]
-            if self.parts[mindx] == current:
+            if self.machines[mindx] == current:
                 summ += self.matrix[mindx][index]
                 zeroes += not self.matrix[mindx][index]
         return summ, zeroes
@@ -104,10 +104,12 @@ class BiCl:
         elif name == "move_row":
             index, cluster, self.ones, self.zeros = self.move_row()
             self.machines[index] = cluster
+            self.cluster_check()
             return
         elif name == "move_col":
             index, cluster, self.ones, self.zeros = self.move_col()
             self.parts[index] = cluster
+            self.cluster_check()
             return
         elif name == "swap_row":
             fidx, sidx, self.ones, self.zeros = self.swap_row()
@@ -234,9 +236,9 @@ class BiCl:
                 for i in [j for j, x in enumerate(self.parts) if x == cluster]:
                     # try to move this part into other cluster
                     cl = choice(list(available))
-                    ones, zeros = self.delta_col(i, cl)
-                    new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
-                    objective = new
+                    ones, zeros = self.delta_row(i, cl)
+                    # new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
+                    # objective = new
                     self.ones += ones
                     self.zeros += zeros
                     self.parts[i] = cl
@@ -246,9 +248,9 @@ class BiCl:
                 for i in [j for j, x in enumerate(self.machines) if x == cluster]:
                     # try to move this machine into other cluster
                     cl = choice(list(available))
-                    ones, zeros = self.delta_row(i, cl)
-                    new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
-                    objective = new
+                    ones, zeros = self.delta_col(i, cl)
+                    # new = (self.ones + ones) / (self.ones_all + self.zeros + zeros)
+                    # objective = new
                     self.ones += ones
                     self.zeros += zeros
                     self.machines[i] = cl
@@ -348,18 +350,15 @@ print("before cluster check " + str(bicl.objective_function()))
 bicl.cluster_check()
 print("after cluster check " + str(bicl.objective_function()))
 
-bicl.shuffle_neighborhood()
-print("srabotalo",)
-
 ls = ["move_row", "move_col", "swap_row", "swap_col","shuffle","merge"]
 
 for n in ls:
     bicl.neighbors(n)
-    print("neighbor - " + n + "\n")
-    print(str(bicl.ones) + " " + str(bicl.zeros)+"\n")
+    print("neighbor - " + n)
+    print("in class : " + str(bicl.ones) + " " + str(bicl.zeros))
     _, ones, zeros = bicl.objective_function()
-    print(str(ones) + " " + str(zeros)+"\n")
+    print("from function : " + str(ones) + " " + str(zeros)+"\n")
 
-print(bicl)
+
 print(set(bicl.machines))
 print(set(bicl.parts))
