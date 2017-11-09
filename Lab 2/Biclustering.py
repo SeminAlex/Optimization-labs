@@ -37,6 +37,8 @@ class BiCl:
                     zero_in += not self.matrix[machine][part]
         return one_in / (self.ones_all + zero_in), one_in, zero_in
 
+    # _, self.ones, self.zeros = self.objective_function()
+
     def delta_col(self, index, cluster):
         """
         Calculate impact on objective function if machines with index 'index' will be moved to cluster 'cluster'  
@@ -139,7 +141,7 @@ class BiCl:
         :return: cluster indices
         """
         m_indices = [i for i, x in enumerate(self.machines) if x == candidate]
-        p_indices = [i for i, x in enumerate(self.machines) if x == candidate]
+        p_indices = [i for i, x in enumerate(self.parts) if x == candidate]
         return m_indices, p_indices
 
     def division_neighborhood(self):
@@ -165,8 +167,10 @@ class BiCl:
         calculates the number of ones and zeros in each cluster
         :return: dict, where key - cluster number and value - [x,y], where x - number of zeros and y - number of ones
         """
-        cluster_dict = dict.fromkeys(set(self.machines), [0, 0])
-        for candidate in cluster_dict.keys():
+        # cluster_dict = dict.fromkeys(set(self.machines), [[0, 0]]*self.m)
+        cluster_dict = dict()
+        for candidate in set(self.machines):
+            cluster_dict[candidate] = [0, 0]
             m_indices, p_indices = self.get_cluster_indices(candidate)
             for i in m_indices:
                 for j in p_indices:
@@ -183,7 +187,10 @@ class BiCl:
         """
         cluster_dict = self.calculate_cluster()
         for key, value in cluster_dict.items():
-            cluster_dict[key] = value[1] / value[0]
+            if value[0] != 0:
+                cluster_dict[key] = value[1] / value[0]
+            else:
+                cluster_dict[key] = value[1]*2
         max_impact_cluster = max(cluster_dict.items())[0]
         return max_impact_cluster
 
@@ -358,19 +365,28 @@ class BiCl:
 bicl = BiCl(0, 0)
 bicl.parse_file("instances/20x20.txt")
 bicl.random_solution()
+
+
 print("before cluster check " + str(bicl.objective_function()))
 bicl.cluster_check()
+
+pidor = [sum(x) for x in zip(*bicl.calculate_cluster().values())]
+print(bicl.calculate_cluster())
+_, ones, zeros = bicl.objective_function()
+
+print("suka blyat navalney", pidor, [ones, zeros], 'lokek', bicl.ones_all)
+
 print("after cluster check " + str(bicl.objective_function()))
 
-ls = ["move_row", "move_col", "swap_row", "swap_col","shuffle","merge"]
+ls = ["move_row", "move_col", "swap_row", "swap_col", "shuffle", "merge", "division"]
 
 for n in ls:
     bicl.neighbors(n)
     print("neighbor - " + n)
     print("in class : " + str(bicl.ones) + " " + str(bicl.zeros))
     _, ones, zeros = bicl.objective_function()
-    print("from function : " + str(ones) + " " + str(zeros)+"\n")
-
+    print("from function : " + str(ones) + " " + str(zeros))
+    print("in class : " + str(bicl.ones) + " " + str(bicl.zeros) + "\n")
 
 print(set(bicl.machines))
 print(set(bicl.parts))
