@@ -86,9 +86,9 @@ class BiCl:
         self.parts = [choice(available_clusters) for _ in range(self.p)]
         _, self.ones, self.zeros = self.objective_function()
 
-    # ###########################################
-    # ########## NEIGHBORHOOD SECTION ###########
-    # ###########################################
+    #        ###########################################
+    #        ########## NEIGHBORHOOD SECTION ###########
+    #        ###########################################
 
     def neighbors(self, name=str()):
         name = name.lower()
@@ -182,7 +182,7 @@ class BiCl:
         """
         cluster_dict = self.calculate_cluster()
         for key, value in cluster_dict.items():
-            cluster_dict[key] = value[1] / value[2]
+            cluster_dict[key] = value[1] / value[0]
         max_impact_cluster = max(cluster_dict.items())[0]
         return max_impact_cluster
 
@@ -217,10 +217,10 @@ class BiCl:
         if len(set(self.machines)) > 1:
             candidate_clusters = sample(set(self.machines), 2)
             candidate_clusters.sort()
-            for i in self.m:
+            for i in range(self.m):
                 if self.machines[i] == candidate_clusters[1]:
                     self.machines[i] = candidate_clusters[0]
-            for i in self.p:
+            for i in range(self.p):
                 if self.parts[i] == candidate_clusters[1]:
                     self.parts[i] = candidate_clusters[0]
         return
@@ -348,8 +348,10 @@ print("before cluster check " + str(bicl.objective_function()))
 bicl.cluster_check()
 print("after cluster check " + str(bicl.objective_function()))
 
+bicl.shuffle_neighborhood()
+print("srabotalo",)
 
-ls = ["move_row", "move_col", "swap_row", "swap_col"] # "shuffle","merge",
+ls = ["move_row", "move_col", "swap_row", "swap_col","shuffle","merge"]
 
 for n in ls:
     bicl.neighbors(n)
