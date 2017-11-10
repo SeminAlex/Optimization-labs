@@ -37,8 +37,6 @@ class BiCl:
                     zero_in += not self.matrix[machine][part]
         return one_in / (self.ones_all + zero_in), one_in, zero_in
 
-    # _, self.ones, self.zeros = self.objective_function()
-
     def delta_col(self, index, cluster):
         """
         Calculate impact on objective function if machines with index 'index' will be moved to cluster 'cluster'  
@@ -73,8 +71,8 @@ class BiCl:
                 summ += self.matrix[mindx][index]
                 zeroes += not self.matrix[mindx][index]
             if self.machines[mindx] == current:
-                summ += self.matrix[mindx][index]
-                zeroes += not self.matrix[mindx][index]
+                summ -= self.matrix[mindx][index]
+                zeroes -= not self.matrix[mindx][index]
         return summ, zeroes
 
     def random_solution(self):
@@ -318,21 +316,18 @@ class BiCl:
         """
         objective = self.ones / (self.ones_all + self.zeros)
         result = ()
-        for cluster in set(self.machines):
-            for machine in range(self.m):
-                fones, fzeros = self.delta_col(machine, cluster)
-                for oponent in range(self.m):
-                    if self.machines[oponent] != cluster and machine != oponent:
-                        # opones, opzeros = self.delta_col(oponent, cluster)
-                        # new = self.ones + fones + opones
-                        # new /= self.ones_all + self.zeros + fzeros + opzeros
-                        self.machines[machine], self.machines[oponent] = self.machines[oponent], self.machines[machine]
-                        new,ones,zeros = self.objective_function()
-                        self.machines[machine], self.machines[oponent] = self.machines[oponent], self.machines[machine]
-                        if new > objective:
-                            objective = new
-                            # result = (machine, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
-                            result = (machine, oponent, ones, zeros)
+        for machine in range(self.m):
+            for oponent in range(self.m):
+                if oponent != machine:
+                    fones, fzeros = self.delta_col(machine, self.machines[oponent])
+                    opones, opzeros = self.delta_col(oponent, self.machines[machine])
+                    new = self.ones + fones + opones
+                    new /= self.ones_all + self.zeros + fzeros + opzeros
+
+                    if new > objective:
+                        objective = new
+                        result = (machine, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
+
         return result
 
     def move_col(self):
@@ -363,17 +358,18 @@ class BiCl:
         """
         objective = self.ones / (self.ones_all + self.zeros)
         result = ()
-        for cluster in set(self.parts):
-            for part in range(self.p):
-                fones, fzeros = self.delta_row(part, cluster)
-                for oponent in range(self.m):
-                    if self.machines[oponent] != cluster and part != oponent:
-                        opones, opzeros = self.delta_row(oponent, self.parts[part])
-                        new = self.ones + fones + opones
-                        new /= self.ones_all + self.zeros + fzeros + opzeros
-                        if new > objective:
-                            objective = new
-                            result = (part, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
+        for part in range(self.p):
+            for oponent in range(self.p):
+                if oponent != part:
+                    fones, fzeros = self.delta_row(part, self.parts[oponent])
+                    opones, opzeros = self.delta_row(oponent, self.parts[part])
+                    new = self.ones + fones + opones
+                    new /= self.ones_all + self.zeros + fzeros + opzeros
+
+                    if new > objective:
+                        objective = new
+                        result = (part, oponent, self.ones + fones + opones, self.zeros + fzeros + opzeros)
+
         return result
 
 
@@ -404,3 +400,33 @@ for n in ls:
 
 print(set(bicl.machines))
 print(set(bicl.parts))
+
+#
+#
+# def foo(matrix):
+#     summ = 0
+#     for i in matrix:
+#         summ += sum(i)
+#     return summ
+#
+#
+# bicl.matrix = \
+#     [[1, 1, 1, 1, 0],
+#      [1, 0, 1, 0, 1],
+#      [1, 1, 1, 0, 1],
+#      [1, 1, 0, 1, 1]]
+#
+# bicl.ones_all = foo(bicl.matrix)
+# bicl.m = 4
+# bicl.p = 5
+# bicl.machines = [1, 1, 2, 2]
+# bicl.parts = [1, 1, 2, 2, 2]
+#
+# _, bicl.ones, bicl.zeros = bicl.objective_function()
+#
+# res1 = bicl.delta_row(1, 2)
+# res2 = bicl.delta_row(4, 1)
+#
+#
+# print("Done")
+
