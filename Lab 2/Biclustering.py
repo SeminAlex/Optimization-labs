@@ -1,5 +1,5 @@
 from collections import Counter
-from copy import  deepcopy as cp
+from copy import deepcopy as cp
 from random import sample, choice, shuffle
 
 
@@ -380,91 +380,46 @@ class BiCl:
         return result
 
     def general_vns(self, iteration):
-        neigbor = ["division", "shuffle", "merge", "move_row", "move_col", "swap_row", "swap_col"]
+        neigbor = ["division", "shuffle", "merge",  "swap_row", "swap_col", "move_row", "move_col" ]
         k_max = 3
-        l_max = 4
+        l_max = 7
         k = 0
         # generate random solution
         self.random_solution()
         best = (cp(self.machines), cp(self.parts), cp(self.ones), cp(self.zeros))
         best_in = (cp(self.machines), cp(self.parts), cp(self.ones), cp(self.zeros))
         objective = self.ones / (self.ones_all + self.zeros)
-        while(k != k_max):
+
+        while(k < k_max):
             # shaking phase
             self.neighbors(neigbor[k])
 
             # local search by VND
             l = k_max
-            while(l != l_max):
+            while(l < l_max):
                 self.neighbors(neigbor[l])
                 if best_in[2] != self.ones or best_in[3] != self.zeros:
-                    l += 1
-                else:
+
                     best_in = (self.machines, self.parts, self.ones, self.zeros)
-                    l = 1
+                    l = k_max
+                else:
+                    l += 1
+
 
             new = self.ones/ (self.ones_all + self.zeros)
             if new > objective:
                 best = cp(best_in)
+                objective = new
                 k = 1
+                print("best_obh = ", objective, "\n", best_in, "\n")
             else:
                 k += 1
 
         return best
 
 bicl = BiCl(0, 0)
-bicl.parse_file("instances/24x40.txt")
-bicl.random_solution()
+bicl.parse_file("instances/37x53.txt")
+print(bicl.general_vns(10))
 
 
-print("before cluster check " + str(bicl.objective_function()))
-bicl.cluster_check()
 
-pidor = [sum(x) for x in zip(*bicl.calculate_cluster().values())]
-print(bicl.calculate_cluster())
-_, ones, zeros = bicl.objective_function()
-
-# print("navalney", pidor, [ones, zeros], 'lokek', bicl.ones_all)
-
-print("after cluster check " + str(bicl.objective_function()))
-
-ls = ["move_row", "move_col", "swap_row", "swap_col", "shuffle", "merge", "division"]
-
-for n in ls:
-    bicl.neighbors(n)
-    print("neighbor - " + n)
-    print("in class : " + str(bicl.ones) + " " + str(bicl.zeros))
-    _, ones, zeros = bicl.objective_function()
-    print("from function : " + str(ones) + " " + str(zeros)+"\n")
-
-print(set(bicl.machines))
-print(set(bicl.parts))
-
-#
-#
-# def foo(matrix):
-#     summ = 0
-#     for i in matrix:
-#         summ += sum(i)
-#     return summ
-#
-#
-# bicl.matrix = \
-#     [[1, 1, 1, 1, 0],
-#      [1, 0, 1, 0, 1],
-#      [1, 1, 1, 0, 1],
-#      [1, 1, 0, 1, 1]]
-#
-# bicl.ones_all = foo(bicl.matrix)
-# bicl.m = 4
-# bicl.p = 5
-# bicl.machines = [1, 1, 2, 2]
-# bicl.parts = [1, 1, 2, 2, 2]
-#
-# _, bicl.ones, bicl.zeros = bicl.objective_function()
-#
-# res1 = bicl.delta_row(1, 2)
-# res2 = bicl.delta_row(4, 1)
-#
-#
-# print("Done")
