@@ -39,10 +39,10 @@ class BiCl:
 
     def delta_col(self, index, cluster):
         """
-        Calculate impact on objective function if machines with index 'index' will be moved to cluster 'cluster'  
+        Calculate impact on objective function if machines with index 'index' will be moved to cluster 'cluster'
         :param index: index of machine
         :param cluster: new cluster for this machine
-        :return: difference in 'ones in cluster' and 'zeroes out cluster' 
+        :return: difference in 'ones in cluster' and 'zeroes out cluster'
         """
         current = self.machines[index]
         summ = 0
@@ -58,10 +58,10 @@ class BiCl:
 
     def delta_row(self, index, cluster):
         """
-        Calculate impact on objective function if part with index 'index' will be moved to cluster 'cluster'  
+        Calculate impact on objective function if part with index 'index' will be moved to cluster 'cluster'
         :param index: index of part
         :param cluster: new cluster for this part
-        :return: difference in 'ones in cluster' and 'zeroes out cluster' 
+        :return: difference in 'ones in cluster' and 'zeroes out cluster'
         """
         current = self.parts[index]
         summ = 0
@@ -223,8 +223,8 @@ class BiCl:
                                                                            self.machines[m_indices[i]]
 
         for i in range(len(p_indices)):
-            self.machines[p_indices[i]], self.machines[new_p_indices[i]] = self.machines[new_p_indices[i]], \
-                                                                           self.machines[p_indices[i]]
+            self.parts[p_indices[i]], self.parts[new_p_indices[i]] = self.parts[new_p_indices[i]], \
+                                                                           self.parts[p_indices[i]]
         self.calculate_neighbour_impact()
         return
 
@@ -290,7 +290,6 @@ class BiCl:
     def move_row(self):
         """
         Find row and best cluster for this row in current solution
-
         :return: (index of row, best cluster number, number of ones in clusters in new solution, number of zeros in
         clusters in new solution)
         """
@@ -310,7 +309,6 @@ class BiCl:
     def swap_row(self):
         """
         Find two rows which clusters swap get max impact on objective function
-
         :return: (index of fist row, index of second row, number of ones in clusters in new solution, number of zeros in
         clusters in new solution)
         """
@@ -333,7 +331,6 @@ class BiCl:
     def move_col(self):
         """
         Find column and best cluster for him in current solution
-
         :return: (index of column, best cluster number, number of ones in clusters in new solution, number of zeros in
         clusters in new solution)
         """
@@ -352,7 +349,6 @@ class BiCl:
     def swap_col(self):
         """
         Find two columns which clusters swap get max impact on objective function
-
         :return: (index of fist column, index of second column, number of ones in clusters in new solution,
         number of zeros in clusters in new solution)
         """
@@ -374,7 +370,7 @@ class BiCl:
 
 
 bicl = BiCl(0, 0)
-bicl.parse_file("instances/20x20.txt")
+bicl.parse_file("instances/24x40.txt")
 bicl.random_solution()
 
 
@@ -429,4 +425,3 @@ print(set(bicl.parts))
 #
 #
 # print("Done")
-
