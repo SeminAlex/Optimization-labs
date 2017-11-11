@@ -1,4 +1,5 @@
 from collections import Counter
+from copy import  deepcopy as cp
 from random import sample, choice, shuffle
 
 
@@ -81,6 +82,8 @@ class BiCl:
         self.machines = [choice(available_clusters) for _ in range(self.m)]
         self.parts = [choice(available_clusters) for _ in range(self.p)]
         _, self.ones, self.zeros = self.objective_function()
+        self.cluster_check()
+        return
 
     def write_to_file(self, filename):
         with open(filename, "w") as f:
@@ -109,22 +112,30 @@ class BiCl:
             self.merge_neighborhood()
             return
         elif name == "move_row":
-            index, cluster, self.ones, self.zeros = self.move_row()
-            self.machines[index] = cluster
-            self.cluster_check()
+            result = self.move_row()
+            if result:
+                index, cluster, self.ones, self.zeros = result
+                self.machines[index] = cluster
+                self.cluster_check()
             return
         elif name == "move_col":
-            index, cluster, self.ones, self.zeros = self.move_col()
-            self.parts[index] = cluster
-            self.cluster_check()
+            result = self.move_col()
+            if result:
+                index, cluster, self.ones, self.zeros = result
+                self.parts[index] = cluster
+                self.cluster_check()
             return
         elif name == "swap_row":
-            fidx, sidx, self.ones, self.zeros = self.swap_row()
-            self.machines[sidx], self.machines[fidx] = self.machines[fidx], self.machines[sidx]
+            result = self.swap_row()
+            if result:
+                fidx, sidx, self.ones, self.zeros = result
+                self.machines[sidx], self.machines[fidx] = self.machines[fidx], self.machines[sidx]
             return
         elif name == "swap_col":
-            fidx, sidx, self.ones, self.zeros = self.swap_col()
-            self.parts[fidx], self.parts[sidx] = self.parts[sidx], self.parts[fidx]
+            result = self.swap_col()
+            if result:
+                fidx, sidx, self.ones, self.zeros = self.swap_col()
+                self.parts[fidx], self.parts[sidx] = self.parts[sidx], self.parts[fidx]
             return
         else:
             raise "Error: There is no neighborhood with name '" + str(name) + "'\n"
@@ -368,6 +379,38 @@ class BiCl:
 
         return result
 
+    def general_vns(self, iteration):
+        neigbor = ["division", "shuffle", "merge", "move_row", "move_col", "swap_row", "swap_col"]
+        k_max = 3
+        l_max = 4
+        k = 0
+        # generate random solution
+        self.random_solution()
+        best = (cp(self.machines), cp(self.parts), cp(self.ones), cp(self.zeros))
+        best_in = (cp(self.machines), cp(self.parts), cp(self.ones), cp(self.zeros))
+        objective = self.ones / (self.ones_all + self.zeros)
+        while(k != k_max):
+            # shaking phase
+            self.neighbors(neigbor[k])
+
+            # local search by VND
+            l = k_max
+            while(l != l_max):
+                self.neighbors(neigbor[l])
+                if best_in[2] != self.ones or best_in[3] != self.zeros:
+                    l += 1
+                else:
+                    best_in = (self.machines, self.parts, self.ones, self.zeros)
+                    l = 1
+
+            new = self.ones/ (self.ones_all + self.zeros)
+            if new > objective:
+                best = cp(best_in)
+                k = 1
+            else:
+                k += 1
+
+        return best
 
 bicl = BiCl(0, 0)
 bicl.parse_file("instances/24x40.txt")
