@@ -42,7 +42,7 @@ class BiCl:
         Calculate impact on objective function if machines with index 'index' will be moved to cluster 'cluster'
         :param index: index of machine
         :param cluster: new cluster for this machine
-        :return: difference in 'ones in cluster' and 'zeroes out cluster'
+        :return: difference in 'ones in cluster' and 'zeroes in cluster'
         """
         current = self.machines[index]
         summ = 0
@@ -61,7 +61,7 @@ class BiCl:
         Calculate impact on objective function if part with index 'index' will be moved to cluster 'cluster'
         :param index: index of part
         :param cluster: new cluster for this part
-        :return: difference in 'ones in cluster' and 'zeroes out cluster'
+        :return: difference in 'ones in cluster' and 'zeroes in cluster'
         """
         current = self.parts[index]
         summ = 0
