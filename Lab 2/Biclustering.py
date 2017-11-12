@@ -2,6 +2,8 @@ from collections import Counter
 from copy import deepcopy as cp
 from random import sample, choice, shuffle
 
+import os
+
 
 class BiCl:
     __slots__ = ["m", "p", "matrix", "machines", "parts", "max_cluster", "ones_all", "ones", "zeros"]
@@ -429,10 +431,34 @@ class BiCl:
                 objective = new
         return objective, best
 
+    def write_solution_to_file(self,filename, solution):
+        print (solution)
+        with open(filename, "w") as f:
+            for i in range(self.m):
+                f.write("m{0}_{1} ".format(i, solution[0][i]))
+            f.write("\n")
+            for i in range(self.p):
+                f.write("p{0}_{1} ".format(i, solution[1][i]))
 
-bicl = BiCl(0, 0)
-bicl.parse_file("instances/30x90.txt")
-print(bicl.solve(1000))
+
+def create_final_solution(filename):
+    bicl = BiCl(0, 0)
+    bicl.parse_file("instances/{0}".format(filename))
+    obj, solution = bicl.solve(20)
+    solfilename = filename.split(".")[0]
+    bicl.write_solution_to_file("results/{0}.sol".format(solfilename), solution)
+    with open("log.txt","a") as log:
+        log.write("this is solution for {0}, the result is:{1} \n".format(filename,obj))
+
+for instance in os.listdir("instances"):
+    create_final_solution(instance)
+
+# create_final_solution("20x20.txt")
+# create_final_solution("24x40.txt")
+# create_final_solution("20x20.txt")
+# create_final_solution("20x20.txt")
+# create_final_solution("20x20.txt")
+
 
 
 
