@@ -1,0 +1,5 @@
+this is solution for 37x53.txt, the result is:0.5976284584980237 
+this is solution for 24x40.txt, the result is:0.4460431654676259 
+this is solution for 20x20.txt, the result is:0.4330708661417323 
+this is solution for 30x90.txt, the result is:0.4444444444444444 
+this is solution for 30x50.txt, the result is:0.49743589743589745 
