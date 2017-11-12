@@ -379,7 +379,7 @@ class BiCl:
 
         return result
 
-    def general_vns(self, iteration):
+    def general_vns(self):
         neigbor = ["division", "shuffle", "merge",  "swap_row", "swap_col", "move_row", "move_col" ]
         k_max = 3
         l_max = 7
@@ -411,15 +411,28 @@ class BiCl:
                 best = cp(best_in)
                 objective = new
                 k = 1
-                print("best_obh = ", objective, "\n", best_in, "\n")
             else:
                 k += 1
 
         return best
 
+    def solve(self, iteration):
+        objective = self.ones / (self.zeros + self.ones_all)
+        best = (cp(self.machines), cp(self.parts), cp(self.ones), cp(self.zeros))
+        for i in range(iteration):
+            current = self.general_vns()
+            new = current[2] / (self.ones_all + current[3])
+            if new > objective:
+                print("Iteration : ", i, " get objective = ", new)
+                print(current)
+                best = cp(current)
+                objective = new
+        return objective, best
+
+
 bicl = BiCl(0, 0)
-bicl.parse_file("instances/37x53.txt")
-print(bicl.general_vns(10))
+bicl.parse_file("instances/30x90.txt")
+print(bicl.solve(1000))
 
 
 
