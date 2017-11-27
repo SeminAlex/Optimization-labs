@@ -24,10 +24,10 @@ class BiCl:
         self.ones_all = 0
         self.m, self.p = int(lines[0].split()[0]), int(lines[0].split()[1])
         self.matrix = [[0] * self.p for _ in range(self.m)]
-        for i in range(1, len(lines) - 1):
+        for i in range(1, len(lines)):
             self.ones_all += len(lines[i].split()[1:])
             for j in lines[i].split()[1:]:
-                self.matrix[i][int(j) - 1] = 1
+                self.matrix[i-1][int(j) - 1] = 1
         return self.matrix
 
     def objective_function(self):
@@ -450,10 +450,12 @@ def create_final_solution(filename):
     with open("log.txt","a") as log:
         log.write("this is solution for {0}, the result is:{1} \n".format(filename,obj))
 
+
 for instance in os.listdir("instances"):
+    print("Instance : ", instance)
     create_final_solution(instance)
 
-# create_final_solution("20x20.txt")
+#create_final_solution("proba.txt")
 # create_final_solution("24x40.txt")
 # create_final_solution("20x20.txt")
 # create_final_solution("20x20.txt")
