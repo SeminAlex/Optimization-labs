@@ -1,3 +1,5 @@
+from random import randint, sample
+
 class Customer:
     __slots__ = ["x", "y", "demand", "ready", "due", "service"]
 
@@ -54,12 +56,33 @@ class CVRPTW:
                 f.write("\n")
         return
 
-    def is_available(self):
+    def is_available(self, first, second, current_time):
         """
         Check if customer is available for vehicle and vehicle has enough goods 
         :return: 
         """
-        time =
+        total_time = current_time + self.distance[first][second]
+
+    def init_chromosome(self, P):
+
+        t = list(range(len(self.customers)))
+
+        for i in range(len(self.customers)*P):
+            x, y = sample(t, 2)
+            t[x], t[y] = t[y], t[x]
+        return t
+
+    def mutation(self, t):
+        x = len(self.customers)
+        a, b = sample(range(x), 2)
+        t[a], t[b] = t[b], t[a]
+        c = list(range(x))
+        for i in range(x):
+            c[i] = t[i]
+        return c
+
+
+
 
 
 parse_file("instanes/C104.txt")
