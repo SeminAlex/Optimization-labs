@@ -64,7 +64,7 @@ class CVRPTW:
         """
         total_time = current_time + self.distance[first][second] + self.customers[second].service
         if total_time + self.distance[second][0] <= self.customers[0].due and \
-                current_capasity - self.customers[second].demand >= 0:
+                                current_capasity - self.customers[second].demand >= 0:
             return True
         return False
 
@@ -86,11 +86,11 @@ class CVRPTW:
 
     def crossover(self, ch_first, ch_second):
         i, j = sample(range(1, len(self.customers)), 2)
-        if i>j:
-            i,j = j,i
+        if i > j:
+            i, j = j, i
 
-        child1 = [0]*len(self.customers)
-        child2 = [0]*len(self.customers)
+        child1 = [0] * len(self.customers)
+        child2 = [0] * len(self.customers)
         # copy some gens to childs
         child1[i:j] = ch_first[i:j]
         child2[i:j] = ch_second[i:j]
@@ -132,4 +132,85 @@ class CVRPTW:
 
         return child1, child2
 
-parse_file("instanes/C104.txt")
+    def culc_cost(self, tab, capacity):
+        cost = 0
+        actual_time = 0
+        actual_capacity = capacity
+        actual_place = 0
+        destination = tab[1]
+        executed = 1
+        vehicle = 0
+
+        while executed != len(self.customers):
+            if self.is_available(actual_place, destination, actual_time, actual_capacity):
+                if self.distance[actual_place][destination] + actual_time > self.customers[destination].ready:
+                    actual_time += self.distance[actual_place][destination] + self.customers[destination].ready
+                else:
+                    actual_time = self.customers[destination].ready + self.customers[destination].service
+                actual_capacity -= self.customers[destination].demand
+                actual_place = destination
+            else:
+                cost += actual_time + self.distance[actual_place][0]
+                actual_time = 0
+                actual_capacity = capacity
+                vehicle += 1
+                destination = 0
+                actual_place = 0
+            if destination != 0:
+                executed += 1
+            destination = tab[executed]
+
+        cost += actual_time + self.distance[actual_place][0]
+        vehicle += 1
+        return cost
+
+    def show_results(self, tab, capacity):
+        cost = 0
+        actual_time = 0
+        actual_capacity = capacity
+        actual_place = 0
+        destination = tab[1]
+        executed = 1
+        vehicle = 0
+        results = list()
+        size = 0
+
+        file = open("out.txt", "w")
+        while executed != len(self.customers):
+            if self.is_available(actual_place, destination, actual_time, actual_capacity):
+                if self.distance[actual_place][destination] + actual_time > self.customers[destination].ready:
+                    actual_time += self.distance[actual_place][destination] + self.customers[destination].ready
+                else:
+                    actual_time = self.customers[destination].ready + self.customers[destination].service
+                actual_capacity -= self.customers[destination].demand
+                actual_place = destination
+                results.append(destination)
+                size += 1
+            else:
+                cost += actual_time + self.distance[actual_place][0]
+                actual_time = 0
+                actual_capacity = capacity
+                vehicle += 1
+                destination = 0
+                actual_place = 0
+                results.append(0)
+                size += 1
+            if destination != 0:
+                executed += 1
+            destination = tab[executed]
+
+        cost += actual_time + self.distance[actual_place][0]
+        vehicle += 1
+
+        file.write(str(vehicle) + " " + str(cost) + "\n")
+        for i in range(size):
+            if results[i] == 0:
+                file.write("\n")
+            else:
+                file.write(str(results[i]) + " ")
+
+        file.close()
+
+
+vehicles, capacity, customers = parse_file("instanes/C104.txt")
+
