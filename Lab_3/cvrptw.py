@@ -1,5 +1,6 @@
 from random import randint, sample
-
+from time import clock
+from math import floor
 
 class Customer:
     __slots__ = ["x", "y", "demand", "ready", "due", "service"]
@@ -75,14 +76,14 @@ class CVRPTW:
             t[x], t[y] = t[y], t[x]
         return t
 
-    def mutation(self, t):
+    def mutation(self, t, c):
         x = len(self.customers)
         a, b = sample(range(x), 2)
         t[a], t[b] = t[b], t[a]
-        c = list(range(x))
+#        c = list(range(x))
         for i in range(x):
             c[i] = t[i]
-        return c
+        return t, c
 
     def crossover(self, ch_first, ch_second):
         i, j = sample(range(1, len(self.customers)), 2)
@@ -213,4 +214,105 @@ class CVRPTW:
 
 
 vehicles, capacity, customers = parse_file("instanes/C104.txt")
+
+
+##########################
+P = 3
+POPSIZE = 8
+GEN = 13
+M = 1
+CLOCKS_PER_SEC = 10000
+
+pojemnosc=0
+straznik=1
+cvrptw = CVRPTW(vehicles, capacity, customers)
+
+for i in range(1,len(customers)):
+    if not cvrptw.is_available(0, i, 0, pojemnosc):
+        straznik=0
+        break
+
+    if straznik:
+        population =list()
+        for i in range(POPSIZE+GEN+2):
+            population.append([0]*len(customers))
+
+        i = 360/POPSIZE
+        j = 360/POPSIZE
+        a=360/POPSIZE
+        rl = 0
+        s = 0
+        t = 0
+        the_best_cost = float('inf')
+        the_best_population = [0]*len(customers)
+        nothing=0
+
+        for i in range(POPSIZE):
+            cvrptw.init_chromosome(population[i])
+
+        generation=1
+        start=clock()
+        while clock()<start+18*CLOCKS_PER_SEC:
+            generation += 1
+            for i in range(POPSIZE,POPSIZE+M):
+                rl=randint()%360
+                for j in range(1, POPSIZE):
+                    if floor(rl/a)==j-1:
+                        s=j-1
+                        population[s], population[i] = cvrptw.mutation(population[s],population[i])
+
+
+            for i in range(POPSIZE+M, POPSIZE+GEN):
+                while True:
+                    rl=randint()%360
+                    for j in range(1,POPSIZE):
+                        if floor(rl/a)==j-1:
+                            s=j-1
+
+                    rl=randint()%360
+                    for j in range(1,POPSIZE):
+                        if floor(rl/a)==j-1:
+                            t=j-1
+                    if s != t:
+                        break
+                population[i], population[i+1] = cvrptw.crossover(population[s],population[t])
+
+
+            best_cost= cvrptw.culc_cost(population[0],pojemnosc)
+            best=0
+
+            for i in range(POPSIZE):
+                for j in range(i,POPSIZE+GEN):
+                    if cvrptw.culc_cost(population[j],pojemnosc)<best_cost:
+                        best=j
+                        best_cost=cvrptw.culc_cost(population[j],pojemnosc)
+                for x in range(len(customers)):
+                    population[i][x],population[best][x] = population[best][x], population[i][x]
+
+
+            if generation==2:
+                the_best_cost=cvrptw.culc_cost(population[0],pojemnosc)
+                for y in range(len(customers)):
+                    the_best_population[y]=population[0][y]
+
+            if the_best_cost>cvrptw.culc_cost(population[0],pojemnosc):
+                the_best_cost=cvrptw.culc_cost(population[0],pojemnosc)
+                for y in range(len(customers)):
+                    the_best_population[y]=population[0][y]
+
+                print("new best CHILD " + str(the_best_cost) +" iteration without changes: " +
+                      str(nothing)+" generacja: " +str(generation) + "\n")
+
+                nothing=0
+            else:
+                nothing+=1
+
+
+            if nothing==100:
+                break
+
+
+        cvrptw.show_results(the_best_population,pojemnosc)
+
+
 
