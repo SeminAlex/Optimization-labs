@@ -216,7 +216,7 @@ class CVRPTW:
 vehicles, capacity, customers = parse_file("instanes/C104.txt")
 
 
-##########################
+###############doesn't work###########
 P = 3
 POPSIZE = 8
 GEN = 13
