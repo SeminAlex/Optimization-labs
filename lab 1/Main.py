@@ -1,7 +1,7 @@
 # Main file
 import RILS as rils
 
-
+#lolkek
 def parse_file(filename):
     with open(filename, "r") as f:
         lines = f.readlines()
